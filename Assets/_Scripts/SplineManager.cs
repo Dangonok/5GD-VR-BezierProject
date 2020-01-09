@@ -18,7 +18,10 @@ public class SplineManager : MonoBehaviour
     [SerializeField] GameObject BufferRotation;
 
     public SteamVR_Action_Boolean triggerAction;
+    public SteamVR_Action_Boolean deleteTrigger;
 
+
+    bool waitForEndOfFrame = false;
 
     // Start is called before the first frame update
     void Start()
@@ -62,7 +65,7 @@ public class SplineManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        print(spline.pointCount);
         CheckForEndOfPath();
 
 
@@ -70,20 +73,40 @@ public class SplineManager : MonoBehaviour
         {
             InstantiateANewAnchor(false);
         }
+        if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any))
+        {
+            DestroyTheLastX(1);
+        }
 
         if (GameManager.Instance.datas.previsualisation)
             MakeThePevisualisation();
         Vector3 test = GetNewPosition(handTransform);
     }
 
+    
+
+    private void LateUpdate()
+    {
+        if (waitForEndOfFrame == true)
+        {
+            StartCoroutine(Rebuild());
+            waitForEndOfFrame = false;
+        }
+    }
+
+    IEnumerator Rebuild()
+    {
+        yield return 0;
+        spline.RebuildImmediate();
+    }
+
 
     void CheckForEndOfPath()
     {
-        float numberOfPoint = spline.pointCount;
-        float pourcentageOfOnePoint = 100f / numberOfPoint;
-        float endOfTheLastPoint = pourcentageOfOnePoint -  pourcentageOfOnePoint * (GameManager.Instance.datas.PourcentageOfLastSegment / 100f);
-        float valueToDrawAnotherPoint = (100f - endOfTheLastPoint)/100;
-        print(valueToDrawAnotherPoint + "    " + splineFollower.result.percent);
+        double numberOfPoint = spline.pointCount;
+        double pourcentageOfOnePoint = (double) 100f / numberOfPoint;
+        double endOfTheLastPoint = (double)pourcentageOfOnePoint -  (double)pourcentageOfOnePoint * (GameManager.Instance.datas.PourcentageOfLastSegment / (double)100f);
+        double valueToDrawAnotherPoint = ((double)100f - endOfTheLastPoint)/(double)100;
 
         if (splineFollower.result.percent > valueToDrawAnotherPoint)
         {
@@ -99,7 +122,7 @@ public class SplineManager : MonoBehaviour
         InstantiateANewAnchor(true);
     }
 
-    void DestroyTheLastX(int numberOfSegment)
+    public void DestroyTheLastX(int numberOfSegment)
     {
         SplinePoint[] actualPoints = spline.GetPoints();
         SplinePoint[] newPoints = new SplinePoint[actualPoints.Length - numberOfSegment];
@@ -107,8 +130,9 @@ public class SplineManager : MonoBehaviour
         {
             newPoints[i] = actualPoints[i];
         }
-
         spline.SetPoints(newPoints);
+        waitForEndOfFrame = true;
+        splineFollower.result.percent = (double)(splineFollower.result.percent * ((double)1 + (double)1 / (double)spline.pointCount));
     }
 
     void InstantiateForEndOfRoad()
@@ -122,6 +146,24 @@ public class SplineManager : MonoBehaviour
         newPoint.normal = curveInstantiator.transform.up;
         newPoint.size = 1f;
         newPoint.color = Color.white;
+        Vector3 distance = lastPoint.tangent2 - newPoint.position;
+        newPoint.tangent = distance / 1.5f + newPoint.position;
+        newPoint.tangent2 = -distance / 1.5f + newPoint.position;
+
+        //CreateAPointClampSpline(newPoint);
+        CreateAPoint(newPoint);
+        spline.RebuildImmediate();
+        splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
+                                        * ((double)(double)spline.pointCount + (double)1)));
+    }
+
+    void InstantiateANewAnchor(SplinePoint buffer)
+    {
+        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+
+        Vector3 newPos = GetNewPosition(handTransform);
+        SplinePoint newPoint = buffer;
+        
         Vector3 distance = lastPoint.tangent2 - newPoint.position;
         newPoint.tangent = distance / 1.5f + newPoint.position;
         newPoint.tangent2 = -distance / 1.5f + newPoint.position;

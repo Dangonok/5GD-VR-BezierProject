@@ -6,6 +6,7 @@ using Valve.VR;
 public class Avatar : MonoBehaviour
 {
     [SerializeField] SteamVR_Action_Boolean triggerAction;
+    [SerializeField] SplineManager splineManager;
     private List<Shape> m_bubblesInRange = new List<Shape>();
 
     // Start is called before the first frame update
@@ -34,6 +35,16 @@ public class Avatar : MonoBehaviour
                 m_bubblesInRange.RemoveAt(i);
                 Destroy(thisBubble.gameObject);
             }
+        }
+    }
+
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Death")
+        {
+            print("death");
+            splineManager.DestroyTheLastX(GameManager.Instance.datas.deathRedo);
         }
     }
 
