@@ -20,7 +20,7 @@ MonoBehaviour:
   spheresMinRadius: 150
   spheresMaxRadius: 150
   distanceInit: 30
-  MaxRotationZ: 90
+  maxRotationZ: 0
   objects:
   - {fileID: 100000, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   - {fileID: 100002, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
@@ -32,6 +32,8 @@ MonoBehaviour:
   - {fileID: 100016, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   - {fileID: 100018, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   - {fileID: 100020, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  deathRedo: 4
+  PourcentageOfLastSegment: 60
   brightnessMax: 15
   progressifLighting: 25
   durationOfLight: 1
