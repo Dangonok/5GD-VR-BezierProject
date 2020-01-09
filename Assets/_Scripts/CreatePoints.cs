@@ -17,7 +17,6 @@ public class CreatePoints : MonoBehaviour
 
     [SerializeField] float m_distanceFocus;
     [SerializeField] Transform m_parentHand;
-    
     [SerializeField] GameObject m_lastPathGoTemp;
     [SerializeField] LineRenderer m_line;
 
