@@ -9,6 +9,8 @@ public class FPSSpline : MonoBehaviour
     [SerializeField] SplineFollower splineFollower;
     [SerializeField] Transform guizmoRotation;
     private float rotationZ;
+    [SerializeField] Transform bufferRotation;
+    [SerializeField] Transform curveInstantiator;
     void PreInstantiate()
     {
         SplinePoint[] points = new SplinePoint[GameManager.Instance.datas.howManySegmentAtTheBeginning];
@@ -42,7 +44,7 @@ public class FPSSpline : MonoBehaviour
         Vector3 posPop = GetInstanceDotPositionRay();
         SplinePoint newPoint = new SplinePoint();
         newPoint.position = posPop;
-        newPoint.normal = guizmoRotation.up;
+        newPoint.normal = curveInstantiator.up;
         newPoint.size = 1f;
         newPoint.color = Color.white;
         Vector3 distance = lastPoint.tangent2 - newPoint.position;
@@ -55,6 +57,7 @@ public class FPSSpline : MonoBehaviour
 
     private Vector3 GetInstanceDotPositionRay()
     {
+        SetBuffer(guizmoRotation);
         Vector3 finalDotPosition = spline.GetPoint(spline.pointCount -1).position;
         Vector3 focusRay = transform.forward * 200 + transform.position;
         Vector3 pointToRayDirection = (focusRay - finalDotPosition).normalized;
@@ -76,9 +79,17 @@ public class FPSSpline : MonoBehaviour
     
     private void GuizmoRotation(float rotation)
     {
-        rotationZ += Time.deltaTime * -rotation * 10000f;
-        rotationZ = Mathf.Clamp(rotationZ, -160f, 160f);
+        rotationZ += Time.deltaTime * -rotation * 30000f;
+        rotationZ = Mathf.Clamp(rotationZ, -130f, 130f);
         guizmoRotation.localRotation = Quaternion.Lerp(guizmoRotation.localRotation, Quaternion.Euler(new Vector3(0, 0, rotationZ)), 0.33f);
+    }
+
+    private void SetBuffer(Transform handTransform)
+    {
+        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+        bufferRotation.transform.position = lastPoint.position;
+        bufferRotation.transform.rotation = Quaternion.LookRotation(lastPoint.tangent2 - lastPoint.position, lastPoint.normal);
+        curveInstantiator.transform.localRotation = handTransform.localRotation;
     }
 
     void Start()
