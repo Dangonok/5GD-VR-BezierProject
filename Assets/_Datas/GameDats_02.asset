@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b2278420b9697f468be47e1ad4ff8c4, type: 3}
+  m_Name: GameDats_02
+  m_EditorClassIdentifier: 
+  playerSpeed: 10
+  previsualisation: 1
+  preInstantiate: 1
+  howManySegmentAtTheBeginning: 5
+  distanceBetweenAnchor: 30
+  spheresMinRadius: 150
+  spheresMaxRadius: 150
+  distanceInit: 30
+  MaxRotationZ: 90
+  objects:
+  - {fileID: 100000, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100002, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100004, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100006, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100010, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100012, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100014, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100016, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100018, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  - {fileID: 100020, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
+  brightnessMax: 15
+  progressifLighting: 25
+  durationOfLight: 1
+  rangeOfAction: 10
