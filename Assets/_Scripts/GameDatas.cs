@@ -13,9 +13,12 @@ public class GameDatas : ScriptableObject
     public int spheresMinRadius;
     public int spheresMaxRadius;
     public int distanceInit;
-    public int MaxRotationZ;
+    public int maxRotationZ;
     public GameObject[] objects;
-
+    public int deathRedo;
+    
+    [Range (0,100)]
+    public int PourcentageOfLastSegment;
 
 
 

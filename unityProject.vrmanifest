@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.experiencefondamentalevr.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\Paul Demars\\Documents\\Frozen\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\Paul Demars\\Documents\\5GD-VR-BezierProject\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "ExperienceFondamentaleVR [Testing]"
