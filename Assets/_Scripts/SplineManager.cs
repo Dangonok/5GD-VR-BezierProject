@@ -62,6 +62,10 @@ public class SplineManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        CheckForEndOfPath();
+
+
         if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any))
         {
             InstantiateANewAnchor(false);
@@ -71,6 +75,24 @@ public class SplineManager : MonoBehaviour
             MakeThePevisualisation();
         Vector3 test = GetNewPosition(handTransform);
     }
+
+
+    void CheckForEndOfPath()
+    {
+        float numberOfPoint = spline.pointCount;
+        float pourcentageOfOnePoint = 100f / numberOfPoint;
+        float endOfTheLastPoint = pourcentageOfOnePoint -  pourcentageOfOnePoint * (GameManager.Instance.datas.PourcentageOfLastSegment / 100f);
+        float valueToDrawAnotherPoint = (100f - endOfTheLastPoint)/100;
+        print(valueToDrawAnotherPoint + "    " + splineFollower.result.percent);
+
+        if (splineFollower.result.percent > valueToDrawAnotherPoint)
+        {
+            print("0");
+            InstantiateForEndOfRoad();
+        }
+    }
+
+
 
     void MakeThePevisualisation()
     {
@@ -89,6 +111,27 @@ public class SplineManager : MonoBehaviour
         spline.SetPoints(newPoints);
     }
 
+    void InstantiateForEndOfRoad()
+    {
+        //new point
+        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+
+        Vector3 newPos = GetNewPosition(spline.GetPoint(spline.pointCount -1).tangent2 - spline.GetPoint(spline.pointCount -1).position);
+        SplinePoint newPoint = new SplinePoint();
+        newPoint.position = newPos;
+        newPoint.normal = curveInstantiator.transform.up;
+        newPoint.size = 1f;
+        newPoint.color = Color.white;
+        Vector3 distance = lastPoint.tangent2 - newPoint.position;
+        newPoint.tangent = distance / 1.5f + newPoint.position;
+        newPoint.tangent2 = -distance / 1.5f + newPoint.position;
+
+        //CreateAPointClampSpline(newPoint);
+        CreateAPoint(newPoint);
+        spline.RebuildImmediate();
+        splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
+                                        * ((double)(double)spline.pointCount + (double)1)));
+    }
 
     void InstantiateANewAnchor(bool previsualisation)
     {
@@ -139,6 +182,17 @@ public class SplineManager : MonoBehaviour
         BufferRotation.transform.rotation = Quaternion.LookRotation(lastPoint.tangent2 - lastPoint.position, lastPoint.normal);
         curveInstantiator.transform.localRotation = handTransform.localRotation;
       // curveInstantiator.transform.localRotation = Quaternion.Lerp(Quaternion.identity, handTransform.localRotation , 0.5f);
+        Vector3 newPos = curveInstantiator.transform.forward * GameManager.Instance.datas.distanceBetweenAnchor + BufferRotation.transform.position;
+        return newPos;
+    }
+
+    Vector3 GetNewPosition (Vector3 rotationOfPoint)
+    {
+        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+        BufferRotation.transform.position = lastPoint.position;
+        BufferRotation.transform.rotation = Quaternion.LookRotation(lastPoint.tangent2 - lastPoint.position, lastPoint.normal);
+        curveInstantiator.transform.localRotation = new Quaternion(0, 0, 0, 0) ;
+        // curveInstantiator.transform.localRotation = Quaternion.Lerp(Quaternion.identity, handTransform.localRotation , 0.5f);
         Vector3 newPos = curveInstantiator.transform.forward * GameManager.Instance.datas.distanceBetweenAnchor + BufferRotation.transform.position;
         return newPos;
     }

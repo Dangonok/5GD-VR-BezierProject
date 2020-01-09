@@ -36,7 +36,7 @@ public class Instantiator : MonoBehaviour
                 RotationOnZ -= 360;
             }
             //print(RotationOnZ);
-            RotationOnZ = Mathf.Clamp(RotationOnZ, -GameManager.Instance.datas.MaxRotationZ, GameManager.Instance.datas.MaxRotationZ);
+            RotationOnZ = Mathf.Clamp(RotationOnZ, -GameManager.Instance.datas.maxRotationZ, GameManager.Instance.datas.maxRotationZ);
             positionHolder.rotationValue = RotationOnZ;
             positionHolder.InstantiateNewPoints(GetNewPosition(),false);
         }
@@ -49,7 +49,7 @@ public class Instantiator : MonoBehaviour
                 RotationOnZ -= 360;
             }
             //print(RotationOnZ);
-            RotationOnZ = Mathf.Clamp(RotationOnZ, -GameManager.Instance.datas.MaxRotationZ, GameManager.Instance.datas.MaxRotationZ);
+            RotationOnZ = Mathf.Clamp(RotationOnZ, -GameManager.Instance.datas.maxRotationZ, GameManager.Instance.datas.maxRotationZ);
             positionHolder.rotationValue = RotationOnZ;
             positionHolder.PathPrevisualisation(GetNewPosition());
 
