@@ -68,11 +68,11 @@ public class SplineManager : MonoBehaviour
         print(spline.pointCount);
         CheckForEndOfPath();
 
-
         if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any))
         {
             InstantiateANewAnchor(false);
         }
+
         if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any))
         {
             DestroyTheLastX(1);

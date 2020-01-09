@@ -11,6 +11,7 @@ public class FPSSpline : MonoBehaviour
     private float rotationZ;
     [SerializeField] Transform bufferRotation;
     [SerializeField] Transform curveInstantiator;
+    [SerializeField] SplineComputer previsualisationSpline;
     void PreInstantiate()
     {
         SplinePoint[] points = new SplinePoint[GameManager.Instance.datas.howManySegmentAtTheBeginning];
@@ -36,23 +37,41 @@ public class FPSSpline : MonoBehaviour
         spline.SetPoints(points);
     }
 
-    void InstantiateANewAnchor()
+    void InstantiateANewAnchor(bool previsualisation)
     {
-        double percentPrecedent = splineFollower.result.percent;
-        double nbrPoints = (double)spline.pointCount;
-        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
-        Vector3 posPop = GetInstanceDotPositionRay();
-        SplinePoint newPoint = new SplinePoint();
-        newPoint.position = posPop;
-        newPoint.normal = curveInstantiator.up;
-        newPoint.size = 1f;
-        newPoint.color = Color.white;
-        Vector3 distance = lastPoint.tangent2 - newPoint.position;
-        newPoint.tangent = distance / 2f + newPoint.position;
-        newPoint.tangent2 = -distance / 2f + newPoint.position;
-        CreateAPoint(newPoint);
-        spline.RebuildImmediate();
-        splineFollower.result.percent = (double)(percentPrecedent / ((double)1 / (double)nbrPoints * ((double)nbrPoints + (double)1)));
+        if (previsualisation == false)
+        {
+            double percentPrecedent = splineFollower.result.percent;
+            double nbrPoints = (double)spline.pointCount;
+            SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+            Vector3 posPop = GetInstanceDotPositionRay();
+            SplinePoint newPoint = new SplinePoint();
+            newPoint.position = posPop;
+            newPoint.normal = curveInstantiator.up;
+            newPoint.size = 1f;
+            newPoint.color = Color.white;
+            Vector3 distance = lastPoint.tangent2 - newPoint.position;
+            newPoint.tangent = distance / 2f + newPoint.position;
+            newPoint.tangent2 = -distance / 2f + newPoint.position;
+            CreateAPoint(newPoint);
+            spline.RebuildImmediate();
+            splineFollower.result.percent = (double)(percentPrecedent / ((double)1 / (double)nbrPoints * ((double)nbrPoints + (double)1)));
+        }
+        else
+        {
+            SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+            SplinePoint[] points = new SplinePoint[2];
+            points[0] = lastPoint;
+            Vector3 newPos = GetInstanceDotPositionRay();
+            points[1].position = newPos;
+            points[1].normal = curveInstantiator.transform.up;
+            points[1].size = 1f;
+            points[1].color = Color.red;
+            Vector3 distance = points[0].tangent2 - points[1].position;
+            points[1].tangent = distance / 1.5f + points[1].position;
+            points[1].tangent2 = -distance / 1.5f + points[1].position;
+            previsualisationSpline.SetPoints(points);
+        }
     }
 
     private Vector3 GetInstanceDotPositionRay()
@@ -92,18 +111,21 @@ public class FPSSpline : MonoBehaviour
         curveInstantiator.transform.localRotation = handTransform.localRotation;
     }
 
-    void Start()
-    {
-        
-    }
-
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Mouse0))
         {
-            InstantiateANewAnchor();
+            InstantiateANewAnchor(false);
         }
 
+        if (GameManager.Instance.datas.previsualisation)
+            InstantiateANewAnchor(true);
+
         GuizmoRotation(Input.GetAxis("Mouse ScrollWheel"));
+    }
+
+    void Start()
+    {
+
     }
 }
