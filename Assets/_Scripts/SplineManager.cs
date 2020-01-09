@@ -8,6 +8,7 @@ using Valve.VR;
 public class SplineManager : MonoBehaviour
 {
     [SerializeField] SplineComputer spline;
+    [SerializeField] SplineComputer previsualisationSpline;
     [SerializeField] Transform playerTransform;
     [SerializeField] Transform handTransform;
     [SerializeField] SplineFollower splineFollower;
@@ -43,8 +44,8 @@ public class SplineManager : MonoBehaviour
             points[i].color = Color.white;
             if (i == 0)
             {
-                points[i].tangent = -Vector3.forward * GameManager.Instance.datas.distanceBetweenAnchor/2f + points[i].position;
-                points[i].tangent2 = Vector3.forward * GameManager.Instance.datas.distanceBetweenAnchor/2f + points[i].position;
+                points[i].tangent = -Vector3.forward * GameManager.Instance.datas.distanceBetweenAnchor/1.5f + points[i].position;
+                points[i].tangent2 = Vector3.forward * GameManager.Instance.datas.distanceBetweenAnchor/1.5f + points[i].position;
             }
             else
             {
@@ -63,7 +64,7 @@ public class SplineManager : MonoBehaviour
     {
         if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any))
         {
-            InstantiateANewAnchor();
+            InstantiateANewAnchor(false);
         }
 
         if (GameManager.Instance.datas.previsualisation)
@@ -73,31 +74,62 @@ public class SplineManager : MonoBehaviour
 
     void MakeThePevisualisation()
     {
-        
+        InstantiateANewAnchor(true);
+    }
+
+    void DestroyTheLastX(int numberOfSegment)
+    {
+        SplinePoint[] actualPoints = spline.GetPoints();
+        SplinePoint[] newPoints = new SplinePoint[actualPoints.Length - numberOfSegment];
+        for (int i = 0; i < newPoints.Length; i++)
+        {
+            newPoints[i] = actualPoints[i];
+        }
+
+        spline.SetPoints(newPoints);
     }
 
 
-    void InstantiateANewAnchor()
+    void InstantiateANewAnchor(bool previsualisation)
     {
-        //new point
-        double percentPrecedent = splineFollower.result.percent;
-        double nbrPoints = (double)spline.pointCount;
-        SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+        if (previsualisation == false)
+        {
+            //new point
+            SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
 
-        Vector3 posPop = GetNewPosition(handTransform);
-        SplinePoint newPoint = new SplinePoint();
-        newPoint.position = posPop;
-        newPoint.normal = curveInstantiator.transform.up;
-        newPoint.size = 1f;
-        newPoint.color = Color.white;
-        Vector3 distance = lastPoint.tangent2 - newPoint.position;
-        newPoint.tangent = distance/2f + newPoint.position;
-        newPoint.tangent2 = -distance/2f + newPoint.position;
+            Vector3 newPos = GetNewPosition(handTransform);
+            SplinePoint newPoint = new SplinePoint();
+            newPoint.position = newPos;
+            newPoint.normal = curveInstantiator.transform.up;
+            newPoint.size = 1f;
+            newPoint.color = Color.white;
+            Vector3 distance = lastPoint.tangent2 - newPoint.position;
+            newPoint.tangent = distance / 1.5f + newPoint.position;
+            newPoint.tangent2 = -distance / 1.5f + newPoint.position;
 
-        //CreateAPointClampSpline(newPoint);
-        CreateAPoint(newPoint);
-        spline.RebuildImmediate();
-        splineFollower.result.percent = (double)(percentPrecedent / ((double)1 / (double)nbrPoints * ((double)nbrPoints + (double)1)));
+            //CreateAPointClampSpline(newPoint);
+            CreateAPoint(newPoint);
+            spline.RebuildImmediate();
+            splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
+                                            * ((double)(double)spline.pointCount + (double)1)));
+        }
+        else
+        {
+            SplinePoint lastPoint = spline.GetPoint(spline.pointCount - 1);
+            SplinePoint[] points = new SplinePoint[2];
+
+            points[0] = lastPoint;
+
+            Vector3 newPos = GetNewPosition(handTransform);
+            points[1].position = newPos;
+            points[1].normal = curveInstantiator.transform.up;
+            points[1].size = 1f;
+            points[1].color = Color.red;
+            Vector3 distance = points[0].tangent2 - points[1].position;
+            points[1].tangent = distance / 1.5f + points[1].position;
+            points[1].tangent2 = -distance / 1.5f + points[1].position;
+            previsualisationSpline.SetPoints(points);
+        }
     }
 
     Vector3 GetNewPosition(Transform handTransform)
