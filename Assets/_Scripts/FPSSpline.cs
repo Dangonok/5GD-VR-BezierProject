@@ -12,6 +12,7 @@ public class FPSSpline : MonoBehaviour
     [SerializeField] Transform bufferRotation;
     [SerializeField] Transform curveInstantiator;
     [SerializeField] SplineComputer previsualisationSpline;
+
     void PreInstantiate()
     {
         SplinePoint[] points = new SplinePoint[GameManager.Instance.datas.howManySegmentAtTheBeginning];
@@ -99,7 +100,7 @@ public class FPSSpline : MonoBehaviour
     private void GuizmoRotation(float rotation)
     {
         rotationZ += Time.deltaTime * -rotation * 30000f;
-        rotationZ = Mathf.Clamp(rotationZ, -130f, 130f);
+        rotationZ = Mathf.Clamp(rotationZ, -80f, 80f);
         guizmoRotation.localRotation = Quaternion.Lerp(guizmoRotation.localRotation, Quaternion.Euler(new Vector3(0, 0, rotationZ)), 0.33f);
     }
 
