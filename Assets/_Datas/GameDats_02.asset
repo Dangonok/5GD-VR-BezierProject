@@ -16,7 +16,7 @@ MonoBehaviour:
   previsualisation: 1
   preInstantiate: 1
   infinityPath: 0
-  howManySegmentAtTheBeginning: 5
+  howManySegmentAtTheBeginning: 3
   distanceBetweenAnchor: 30
   spheresMinRadius: 150
   spheresMaxRadius: 150
