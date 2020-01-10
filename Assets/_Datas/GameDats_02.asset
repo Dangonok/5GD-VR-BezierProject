@@ -33,6 +33,7 @@ MonoBehaviour:
   - {fileID: 100018, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   - {fileID: 100020, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   deathRedo: 4
+  maxDistanceCompass: 500
   PourcentageOfLastSegment: 60
   brightnessMax: 15
   progressifLighting: 25

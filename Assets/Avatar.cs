@@ -16,6 +16,7 @@ public class Avatar : MonoBehaviour
     [Header ("Compass Part")]
     public GameObject interestPoint;
     public GameObject interestPointCompassPos;
+    public Transform avatarCompass;
 
     // Start is called before the first frame update
     void Start()
@@ -36,17 +37,22 @@ public class Avatar : MonoBehaviour
 
     void PositionOfThePointOfInterest()
     {
-        interestPointCompassPos.transform.LookAt(interestPoint.transform);
-        float distanceBetweenAvatarAndInterest = Vector3.Distance(this.transform.position, interestPoint.transform.position);
-        if (distanceBetweenAvatarAndInterest < GameManager.Instance.datas.maxDistanceCompass)
-        {
-            interestPointCompassPos.transform.localPosition = Vector3.zero + transform.forward * 
-                (distanceBetweenAvatarAndInterest / GameManager.Instance.datas.maxDistanceCompass)* 0.3f;
-        }
-        else
-        {
-            interestPointCompassPos.transform.localPosition = Vector3.zero + transform.forward*0.3f;
-        }
+        //print("0");
+        //interestPointCompassPos.transform.LookAt(interestPoint.transform);
+        //float distanceBetweenAvatarAndInterest = Vector3.Distance(this.transform.position, interestPoint.transform.position);
+        //if (distanceBetweenAvatarAndInterest < GameManager.Instance.datas.maxDistanceCompass)
+        //{
+        //    print("1");
+        //    interestPointCompassPos.transform.GetChild(0).transform.localPosition = Vector3.forward * 
+        //        (distanceBetweenAvatarAndInterest / GameManager.Instance.datas.maxDistanceCompass)*0.45f;
+        //}
+        //else
+        //{
+        //    print("2");
+        //    interestPointCompassPos.transform.GetChild(0).transform.localPosition = Vector3.forward*0.45f;
+        //}
+
+        avatarCompass.LookAt(interestPoint.transform );
     }
 
     private void Absorbe()
