@@ -15,6 +15,7 @@ MonoBehaviour:
   playerSpeed: 10
   previsualisation: 1
   preInstantiate: 1
+  infinityPath: 0
   howManySegmentAtTheBeginning: 5
   distanceBetweenAnchor: 30
   spheresMinRadius: 150
@@ -34,6 +35,7 @@ MonoBehaviour:
   - {fileID: 100020, guid: 3f4d2118f6a772542a1635ef5bfa6982, type: 3}
   deathRedo: 4
   maxDistanceCompass: 500
+  maxSphereRange: 150
   PourcentageOfLastSegment: 60
   brightnessMax: 15
   progressifLighting: 25

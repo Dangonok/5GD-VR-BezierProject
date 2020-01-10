@@ -36,6 +36,7 @@ public class SplineManager : MonoBehaviour
             PreInstantiate();
             print("Preinstantiate");
         }
+        spline.SetPointSize(0, 0.1f);
     }
 
     void PreInstantiate()
@@ -70,9 +71,11 @@ public class SplineManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         //CheckForEndOfPath();
-
+        if (spline.pointCount > Mathf.Infinity)
+        {
+            DestroyTheFirstX(1);
+        }
         
         if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any) /*&& lastTimeInstant + 1f < Time.time*/)
         {
@@ -113,6 +116,22 @@ public class SplineManager : MonoBehaviour
             //previsualisationSpline.gameObject.SetActive(false);
         }
         Vector3 test = GetNewPosition(handTransform);
+    }
+
+
+    void MakeThePathSmaller()
+    {
+        for (float i = 0; i < spline.pointCount - 5 ; i++)
+        {
+            print("done it");
+            float value = 1 - ((spline.pointCount - 5 - i) / 40);
+            if (value < 0.01f)
+            {
+                value = 0.01f;
+            }
+            print(value + "    " + i);
+            spline.SetPointSize((int)i, value);
+        }
     }
 
     
@@ -176,6 +195,22 @@ public class SplineManager : MonoBehaviour
         splineFollower.result.percent = (double)(splineFollower.result.percent * ((double)1 + (double)1 / (double)spline.pointCount));
     }
 
+    public void DestroyTheFirstX(int numberOfSegment)
+    {
+        SplinePoint[] actualPoints = spline.GetPoints();
+        SplinePoint[] newPoints = new SplinePoint[actualPoints.Length - numberOfSegment];
+        for (int i = 0; i < newPoints.Length; i++)
+        {
+            newPoints[i] = actualPoints[i+1];
+        }
+        spline.SetPoints(newPoints);
+        waitForEndOfFrame = true;
+        print(splineFollower.result.percent + "   " + spline.pointCount);
+        print ((double)spline.pointCount / (double)spline.pointCount + (double)1);
+        splineFollower.result.percent = (double)(splineFollower.result.percent * ((double)spline.pointCount / ((double)spline.pointCount +(double)1)));
+        print(splineFollower.result.percent);
+    }
+
     void InstantiateForEndOfRoad()
     {
         //new point
@@ -196,6 +231,7 @@ public class SplineManager : MonoBehaviour
         spline.RebuildImmediate();
         splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
                                         * ((double)(double)spline.pointCount + (double)1)));
+        MakeThePathSmaller();
     }
 
     void InstantiateANewAnchor(SplinePoint buffer)
@@ -214,6 +250,8 @@ public class SplineManager : MonoBehaviour
         spline.RebuildImmediate();
         splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
                                         * ((double)(double)spline.pointCount + (double)1)));
+        MakeThePathSmaller();
+
     }
 
     void InstantiateANewAnchor(bool previsualisation, Material material)
@@ -227,7 +265,7 @@ public class SplineManager : MonoBehaviour
             SplinePoint newPoint = new SplinePoint();
             newPoint.position = newPos;
             newPoint.normal = curveInstantiator.transform.up;
-            newPoint.size = 1f;
+            newPoint.size = 0.5f;
             newPoint.color = Color.white;
             Vector3 distance = lastPoint.tangent2 - newPoint.position;
             newPoint.tangent = distance / 1.5f + newPoint.position;
@@ -238,6 +276,7 @@ public class SplineManager : MonoBehaviour
             spline.RebuildImmediate();
             splineFollower.result.percent = (double)(splineFollower.result.percent / ((double)1 / (double)(double)spline.pointCount
                                             * ((double)(double)spline.pointCount + (double)1)));
+            MakeThePathSmaller();
         }
         else
         {

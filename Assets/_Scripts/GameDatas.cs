@@ -21,6 +21,7 @@ public class GameDatas : ScriptableObject
     public int deathRedo;
 
     public float maxDistanceCompass;
+    public float maxSphereRange;
     
     [Range (0,100)]
     public int PourcentageOfLastSegment;

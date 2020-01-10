@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Avatar : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class Avatar : MonoBehaviour
     private List<Shape> m_bubblesInRange = new List<Shape>();
     [SerializeField] Text collectibleText;
     int collectibleCount = 0;
+    int lastCollectibleCount = 0;
+    [SerializeField] int howManyCollectibleYouNeed;
 
 
     [Header ("Compass Part")]
@@ -18,15 +21,48 @@ public class Avatar : MonoBehaviour
     public GameObject interestPointCompassPos;
     public Transform avatarCompass;
 
+    Vector3 posToLookAt;
+
     // Start is called before the first frame update
     void Start()
     {
-        collectibleText.text = "Collectible : " + collectibleCount.ToString();
+        collectibleText.text =  "Collectible : " + collectibleCount.ToString() + "/" + howManyCollectibleYouNeed.ToString();
+        PositionOfThePointOfInterest();
+        interestPointCompassPos.transform.LookAt(posToLookAt);
+        GlitchedCompass();
+       // StartCoroutine(GlitchedCompass());
+    }
+
+
+
+    void GlitchedCompass()
+    {
+        Quaternion from = interestPointCompassPos.transform.rotation;
+        interestPointCompassPos.transform.LookAt(posToLookAt);
+        Quaternion goodRotation = interestPointCompassPos.transform.rotation;
+        Quaternion to = Quaternion.Slerp(interestPointCompassPos.transform.rotation, Random.rotation, 0.25f);
+        interestPointCompassPos.transform.rotation = from;
+        if (collectibleCount != howManyCollectibleYouNeed)
+        {
+            interestPointCompassPos.transform.DORotateQuaternion(to, 3f).SetEase(Ease.InOutBounce).onComplete += GlitchedCompass;
+        }
+        else
+        {
+            interestPointCompassPos.transform.DORotateQuaternion(goodRotation, 1f).SetEase(Ease.Linear).onComplete += GlitchedCompass;
+        }
     }
 
     void Update()
     {
-        PositionOfThePointOfInterest();
+
+
+        if (collectibleCount > lastCollectibleCount)
+        {
+            PositionOfThePointOfInterest();
+            lastCollectibleCount = collectibleCount;
+        }
+
+
 
         if(triggerAction.GetState(SteamVR_Input_Sources.LeftHand))
         {
@@ -51,8 +87,7 @@ public class Avatar : MonoBehaviour
         //    print("2");
         //    interestPointCompassPos.transform.GetChild(0).transform.localPosition = Vector3.forward*0.45f;
         //}
-
-        avatarCompass.LookAt(interestPoint.transform );
+        posToLookAt = Random.onUnitSphere * (GameManager.Instance.datas.maxSphereRange - GameManager.Instance.datas.maxSphereRange * (collectibleCount / howManyCollectibleYouNeed)) + interestPoint.transform.position;
     }
 
     private void Absorbe()
@@ -81,7 +116,7 @@ public class Avatar : MonoBehaviour
         if (other.tag == "collectible")
         {
             collectibleCount += 1;
-            collectibleText.text = "Collectible : " + collectibleCount.ToString();
+            collectibleText.text = "Collectible : " + collectibleCount.ToString() + "/" + howManyCollectibleYouNeed.ToString();
             Destroy(other.gameObject);
         }
     }
