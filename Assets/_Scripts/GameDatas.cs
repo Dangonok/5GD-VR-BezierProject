@@ -8,6 +8,9 @@ public class GameDatas : ScriptableObject
     public float playerSpeed;
     public bool previsualisation;
     public bool preInstantiate;
+    public bool infinityPath;
+
+
     public int howManySegmentAtTheBeginning;
     public int distanceBetweenAnchor;
     public int spheresMinRadius;

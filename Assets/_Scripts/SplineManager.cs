@@ -22,6 +22,10 @@ public class SplineManager : MonoBehaviour
 
     private float lastTimeInstant = 0;
 
+
+    [SerializeField] Material baseMaterialPrevisualisation;
+    [SerializeField] Material BlockedMaterialPrevisualisation;
+
     bool waitForEndOfFrame = false;
 
     // Start is called before the first frame update
@@ -70,26 +74,43 @@ public class SplineManager : MonoBehaviour
         //CheckForEndOfPath();
 
         
-        if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any) && lastTimeInstant + 1f < Time.time)
+        if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any) /*&& lastTimeInstant + 1f < Time.time*/)
         {
-            InstantiateANewAnchor(false);
-            lastTimeInstant = Time.time;
+            if (GameManager.Instance.datas.infinityPath == true)
+            {
+                InstantiateANewAnchor(false, null);
+            }
+            else
+            {
+                if (1f - 1f/spline.pointCount < splineFollower.result.percent)
+                {
+                    InstantiateANewAnchor(false, null);
+                }
+            }
+            //lastTimeInstant = Time.time;
         }
 
-        if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any) )
+        if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any) && GameManager.Instance.datas.infinityPath == true )
         {
             DestroyTheLastX(1);
         }
 
 
-        if (GameManager.Instance.datas.previsualisation && lastTimeInstant + 1f < Time.time)
+        if (GameManager.Instance.datas.previsualisation /*&& lastTimeInstant + 1f < Time.time*/)
         {
-            MakeThePevisualisation();
-            previsualisationSpline.gameObject.SetActive(true);
+            if (1f - 1f / spline.pointCount < splineFollower.result.percent)
+            {
+                MakeThePevisualisation(baseMaterialPrevisualisation);
+            }
+            else
+            {
+                MakeThePevisualisation(BlockedMaterialPrevisualisation);
+            }
+            //previsualisationSpline.gameObject.SetActive(true);
         }
         else
         {
-            previsualisationSpline.gameObject.SetActive(false);
+            //previsualisationSpline.gameObject.SetActive(false);
         }
         Vector3 test = GetNewPosition(handTransform);
     }
@@ -126,11 +147,20 @@ public class SplineManager : MonoBehaviour
         }
     }
 
-
-
-    void MakeThePevisualisation()
+    double CheckThePercentPointRelatif()
     {
-        InstantiateANewAnchor(true);
+        double numberOfPoint = spline.pointCount;
+        double pourcentageOfOnePoint = (double)100f / numberOfPoint;
+        double endOfTheLastPoint = (double)pourcentageOfOnePoint - (double)pourcentageOfOnePoint * (GameManager.Instance.datas.PourcentageOfLastSegment / (double)100f);
+        double valueToDrawAnotherPoint = ((double)100f - endOfTheLastPoint) / (double)100;
+        return valueToDrawAnotherPoint;
+    }
+
+
+
+    void MakeThePevisualisation(Material material)
+    {
+        InstantiateANewAnchor(true, material);
     }
 
     public void DestroyTheLastX(int numberOfSegment)
@@ -186,7 +216,7 @@ public class SplineManager : MonoBehaviour
                                         * ((double)(double)spline.pointCount + (double)1)));
     }
 
-    void InstantiateANewAnchor(bool previsualisation)
+    void InstantiateANewAnchor(bool previsualisation, Material material)
     {
         if (previsualisation == false)
         {
@@ -224,6 +254,7 @@ public class SplineManager : MonoBehaviour
             Vector3 distance = points[0].tangent2 - points[1].position;
             points[1].tangent = distance / 1.5f + points[1].position;
             points[1].tangent2 = -distance / 1.5f + points[1].position;
+            previsualisationSpline.gameObject.GetComponent<Renderer>().material = material;
             previsualisationSpline.SetPoints(points);
         }
     }
