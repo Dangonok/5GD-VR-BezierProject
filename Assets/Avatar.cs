@@ -2,25 +2,57 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using UnityEngine.UI;
 
 public class Avatar : MonoBehaviour
 {
     [SerializeField] SteamVR_Action_Boolean triggerAction;
     [SerializeField] SplineManager splineManager;
     private List<Shape> m_bubblesInRange = new List<Shape>();
+    [SerializeField] Text collectibleText;
+    int collectibleCount = 0;
+
+
+    [Header ("Compass Part")]
+    public GameObject interestPoint;
+    public GameObject interestPointCompassPos;
+    public Transform avatarCompass;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        collectibleText.text = "Collectible : " + collectibleCount.ToString();
     }
 
     void Update()
     {
+        PositionOfThePointOfInterest();
+
         if(triggerAction.GetState(SteamVR_Input_Sources.LeftHand))
         {
             Absorbe();
         }
+
+    }
+
+    void PositionOfThePointOfInterest()
+    {
+        //print("0");
+        //interestPointCompassPos.transform.LookAt(interestPoint.transform);
+        //float distanceBetweenAvatarAndInterest = Vector3.Distance(this.transform.position, interestPoint.transform.position);
+        //if (distanceBetweenAvatarAndInterest < GameManager.Instance.datas.maxDistanceCompass)
+        //{
+        //    print("1");
+        //    interestPointCompassPos.transform.GetChild(0).transform.localPosition = Vector3.forward * 
+        //        (distanceBetweenAvatarAndInterest / GameManager.Instance.datas.maxDistanceCompass)*0.45f;
+        //}
+        //else
+        //{
+        //    print("2");
+        //    interestPointCompassPos.transform.GetChild(0).transform.localPosition = Vector3.forward*0.45f;
+        //}
+
+        avatarCompass.LookAt(interestPoint.transform );
     }
 
     private void Absorbe()
@@ -45,6 +77,12 @@ public class Avatar : MonoBehaviour
         {
             print("death");
             splineManager.DestroyTheLastX(GameManager.Instance.datas.deathRedo);
+        }
+        if (other.tag == "collectible")
+        {
+            collectibleCount += 1;
+            collectibleText.text = "Collectible : " + collectibleCount.ToString();
+            Destroy(other.gameObject);
         }
     }
 

@@ -16,6 +16,8 @@ public class GameDatas : ScriptableObject
     public int maxRotationZ;
     public GameObject[] objects;
     public int deathRedo;
+
+    public float maxDistanceCompass;
     
     [Range (0,100)]
     public int PourcentageOfLastSegment;

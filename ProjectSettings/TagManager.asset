@@ -9,6 +9,8 @@ TagManager:
   - projectile
   - FxTemporaire
   - Light
+  - Death
+  - collectible
   layers:
   - Default
   - TransparentFX

@@ -20,6 +20,7 @@ public class SplineManager : MonoBehaviour
     public SteamVR_Action_Boolean triggerAction;
     public SteamVR_Action_Boolean deleteTrigger;
 
+    private float lastTimeInstant = 0;
 
     bool waitForEndOfFrame = false;
 
@@ -65,21 +66,31 @@ public class SplineManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        print(spline.pointCount);
-        CheckForEndOfPath();
 
-        if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any))
+        //CheckForEndOfPath();
+
+        
+        if (triggerAction.GetStateDown(SteamVR_Input_Sources.Any) && lastTimeInstant + 1f < Time.time)
         {
             InstantiateANewAnchor(false);
+            lastTimeInstant = Time.time;
         }
 
-        if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any))
+        if (deleteTrigger.GetStateDown(SteamVR_Input_Sources.Any) )
         {
             DestroyTheLastX(1);
         }
 
-        if (GameManager.Instance.datas.previsualisation)
+
+        if (GameManager.Instance.datas.previsualisation && lastTimeInstant + 1f < Time.time)
+        {
             MakeThePevisualisation();
+            previsualisationSpline.gameObject.SetActive(true);
+        }
+        else
+        {
+            previsualisationSpline.gameObject.SetActive(false);
+        }
         Vector3 test = GetNewPosition(handTransform);
     }
 
@@ -110,7 +121,7 @@ public class SplineManager : MonoBehaviour
 
         if (splineFollower.result.percent > valueToDrawAnotherPoint)
         {
-            print("0");
+
             InstantiateForEndOfRoad();
         }
     }
